@@ -14,16 +14,29 @@ RSpec.describe UsersController, type: :controller do
     end
   end
   describe "post#create" do
-    let(:valid_params) { { user: { username: "robbie", password: "starwars" } } }
-    let(:invalid_params) { { user: { srnm: "derek", psswrd: "startrek" } } }
-
-    it "creates user with valid params" do
-      post(:create, params: valid_params)
-      expect(User.last.username).to eq("robbie")
+  
+    context "with valid params" do
+      let(:valid_params) { { user: { username: "robbie", password: "starwars" } } }
+      it "creates user with valid params" do
+        post(:create, params: valid_params)
+        expect(User.last.username).to eq("robbie")
+      end
     end
-    it "errors when invalid params are used" do
-      post(:create, params: invalid_params)
-      expect(flash[:errors]).to be_present
+
+    context "with invalid params" do
+      let(:invalid_params) { { user: { srnm: "derek", psswrd: "startrek" } } }
+
+      before(:each) do
+        post(:create, params: invalid_params)
+      end
+
+      it "error when invalid params are used" do
+        expect(flash[:errors]).to be_present
+      end
+
+      it "redirects back to new_user_url" do
+        expect(response).to redirect_to(new_user_url)
+      end
     end
 
   end
